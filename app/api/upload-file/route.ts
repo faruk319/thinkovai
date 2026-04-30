@@ -1,6 +1,15 @@
 import { NextResponse } from "next/server";
-import { generateMapFromImage, generateMapFromPDFText } from "@/lib/openrouter";
+import { generateMapFromImage, generateMapFromPDFText } from "@/lib/nvidia";
 import { convertToReactFlow } from "@/lib/mapConverter";
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const ALLOWED_TYPES = [
+  "application/pdf",
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+];
 
 export async function POST(request: Request) {
   try {
@@ -10,6 +19,23 @@ export async function POST(request: Request) {
     if (!file) {
       return NextResponse.json(
         { success: false, error: "File is required" },
+        { status: 400 }
+      );
+    }
+
+    // Validate file type
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      return NextResponse.json(
+        { success: false, error: "Only PDF and image files (JPEG, PNG, WebP, GIF) are allowed." },
+        { status: 400 }
+      );
+    }
+
+    // Validate file size
+    if (file.size > MAX_FILE_SIZE) {
+      const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+      return NextResponse.json(
+        { success: false, error: `File is too large (${sizeMB}MB). Maximum allowed size is 5MB.` },
         { status: 400 }
       );
     }

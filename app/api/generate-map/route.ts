@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { generateMapFromText } from "@/lib/openrouter";
+import { generateMapFromText } from "@/lib/nvidia";
 import { convertToReactFlow } from "@/lib/mapConverter";
 
 export async function POST(request: Request) {

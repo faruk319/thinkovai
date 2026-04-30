@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { chatWithMap } from "@/lib/openrouter";
+import { chatWithMap } from "@/lib/nvidia";
 
 export async function POST(request: Request) {
   try {

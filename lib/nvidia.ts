@@ -51,8 +51,8 @@ Return ONLY JSON. No explanation. No markdown. No code fences.`,
         content: `Create a detailed mind map about: ${topic}`,
       },
     ],
-    temperature: 0.2, // Lower temperature for better JSON structure
-    max_tokens: 1024,
+    temperature: 0.2,
+    max_tokens: 8192,
     response_format: { type: "json_object" },
   });
 
@@ -72,9 +72,6 @@ Return ONLY JSON. No explanation. No markdown. No code fences.`,
 }
 
 export async function generateMapFromImage(base64Image: string) {
-  // Most NVIDIA NIM text models don't support vision directly in this endpoint.
-  // We'll use a specialized vision model if needed, but for now we'll use the text model's prompt.
-  // Note: For true multimodal, you'd use nvidia/llama-3.2-11b-vision-instruct
   const response = await getClient().chat.completions.create({
     model: "nvidia/llama-3.2-11b-vision-instruct",
     messages: [
@@ -89,7 +86,7 @@ export async function generateMapFromImage(base64Image: string) {
         ],
       },
     ],
-    max_tokens: 1024,
+    max_tokens: 4096,
   });
 
   const content = response.choices[0]?.message?.content || "";
@@ -133,7 +130,7 @@ Help the user understand, expand, or modify their mind map.`,
     model: MODEL_NAME,
     messages,
     temperature: 0.7,
-    max_tokens: 1024,
+    max_tokens: 4096,
   });
 
   return response.choices[0]?.message?.content || "Sorry, I could not process your request.";

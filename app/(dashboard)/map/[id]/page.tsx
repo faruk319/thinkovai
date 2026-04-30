@@ -120,6 +120,23 @@ export default function MapEditorPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Frontend validation
+    const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+    const ALLOWED = ["application/pdf", "image/jpeg", "image/png", "image/webp", "image/gif"];
+
+    if (!ALLOWED.includes(file.type)) {
+      setError("Only PDF and image files (JPEG, PNG, WebP, GIF) are allowed.");
+      e.target.value = "";
+      return;
+    }
+
+    if (file.size > MAX_SIZE) {
+      const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+      setError(`File is too large (${sizeMB}MB). Maximum allowed is 5MB.`);
+      e.target.value = "";
+      return;
+    }
+
     setGenerating(true);
     setError("");
     
@@ -143,6 +160,7 @@ export default function MapEditorPage() {
       setError(err.message);
     } finally {
       setGenerating(false);
+      e.target.value = "";
     }
   };
 
@@ -228,22 +246,26 @@ export default function MapEditorPage() {
             
             <div className="space-y-3">
               <div className="relative">
-                <input
-                  type="text"
+                <textarea
                   value={prompt}
-                  onChange={(e) => setPrompt(e.target.value)}
-                  placeholder="Topic (e.g. Machine Learning)"
-                  className="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-zinc-300 focus:bg-white transition-colors pr-10 text-zinc-900 placeholder:text-zinc-400 font-medium"
+                  onChange={(e) => setPrompt(e.target.value.slice(0, 2000))}
+                  placeholder="Topic or long text (max 2000 chars)..."
+                  className="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-zinc-300 focus:bg-white transition-colors pr-10 text-zinc-900 placeholder:text-zinc-400 font-medium min-h-[100px] resize-none"
                   disabled={generating}
-                  onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}
+                  maxLength={2000}
                 />
-                <button
-                  onClick={handleGenerate}
-                  disabled={generating || !prompt.trim()}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 disabled:opacity-50 transition-colors text-white"
-                >
-                  {generating ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
-                </button>
+                <div className="absolute right-2 bottom-2 flex flex-col items-center gap-2">
+                  <span className="text-[10px] font-bold text-zinc-400 bg-white px-1.5 py-0.5 rounded-md border border-zinc-100">
+                    {prompt.length}/2000
+                  </span>
+                  <button
+                    onClick={handleGenerate}
+                    disabled={generating || !prompt.trim()}
+                    className="p-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 disabled:opacity-50 transition-colors text-white shadow-sm"
+                  >
+                    {generating ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+                  </button>
+                </div>
               </div>
 
               <div className="flex items-center gap-3">
@@ -252,10 +274,13 @@ export default function MapEditorPage() {
                 <div className="h-px bg-zinc-100 flex-1" />
               </div>
 
-              <label className="flex items-center justify-center gap-2 w-full py-2.5 bg-zinc-50 hover:bg-zinc-100 border border-zinc-200 border-dashed rounded-xl cursor-pointer transition-colors">
-                <FileUp size={16} className="text-zinc-500" />
-                <span className="text-sm text-zinc-600 font-medium">Upload PDF or Image</span>
-                <input type="file" className="hidden" accept=".pdf,image/*" onChange={handleFileUpload} disabled={generating} />
+              <label className="flex flex-col items-center justify-center gap-1.5 w-full py-3 bg-zinc-50 hover:bg-zinc-100 border border-zinc-200 border-dashed rounded-xl cursor-pointer transition-colors">
+                <div className="flex items-center gap-2">
+                  <FileUp size={16} className="text-zinc-500" />
+                  <span className="text-sm text-zinc-600 font-medium">Upload PDF or Image</span>
+                </div>
+                <span className="text-[10px] text-zinc-400 font-medium">Max 5MB · PDF, JPEG, PNG, WebP, GIF</span>
+                <input type="file" className="hidden" accept=".pdf,.jpg,.jpeg,.png,.webp,.gif" onChange={handleFileUpload} disabled={generating} />
               </label>
 
               {error && (
