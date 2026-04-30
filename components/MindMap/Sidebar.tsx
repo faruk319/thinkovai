@@ -113,19 +113,19 @@ export default function Sidebar({ isOpen, onClose, mapContext }: SidebarProps) {
                 onClick={() => setInput("Expand the main topic further")}
                 className="block w-full text-xs px-3 py-2.5 rounded-xl bg-zinc-50 hover:bg-zinc-100 text-zinc-600 hover:text-zinc-900 border border-zinc-200 transition-colors font-medium shadow-sm"
               >
-                "Expand the main topic further"
+                Expand the main topic further
               </button>
               <button
                 onClick={() => setInput("Suggest more subtopics")}
                 className="block w-full text-xs px-3 py-2.5 rounded-xl bg-zinc-50 hover:bg-zinc-100 text-zinc-600 hover:text-zinc-900 border border-zinc-200 transition-colors font-medium shadow-sm"
               >
-                "Suggest more subtopics"
+                Suggest more subtopics
               </button>
               <button
                 onClick={() => setInput("Explain the connections")}
                 className="block w-full text-xs px-3 py-2.5 rounded-xl bg-zinc-50 hover:bg-zinc-100 text-zinc-600 hover:text-zinc-900 border border-zinc-200 transition-colors font-medium shadow-sm"
               >
-                "Explain the connections"
+                Explain the connections
               </button>
             </div>
           </div>
